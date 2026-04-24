@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- Updated Title -->
+  <title>UniSonate: Unified speech and music generation with natural language instruction</title>
+  <!-- Include Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafc;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    p {
+      margin: 0 0 1.5rem;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(90deg, #2c3e50, #34495e);
+      color: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      border-bottom: 2px solid #e74c3c;
+      display: inline-block;
+      padding-bottom: 0.3rem;
+    }
+
+    .section p {
+      font-size: 1rem;
+      color: #555;
+    }
+
+    /* Images and Figures */
+    figure {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    figure img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    figure figcaption {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #2c3e50;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    td {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    tbody tr:hover {
+      background-color: #f2f2f2;
+    }
+
+    /* Audio Player */
+    audio {
+      width: 100%;
+      max-width: 250px; /* Slightly adjusted to fit more columns */
+      min-width: 150px;
+      margin-top: 0.5rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Footer */
+    footer {
+      background: #2c3e50;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    /* Utility Classes */
+    .text-center {
+      text-align: center;
+    }
+
+    .highlight {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    /* Custom Table Styles */
+    .audio-table {
+        background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        overflow-x: auto;
+    }
+    
+    .audio-table table {
+        min-width: 1400px; /* Increased min-width to accommodate new column */
+        border-collapse: separate;
+        border-spacing: 0 1rem;
+    }
+    
+    .audio-table thead th {
+        background: #2c3e50;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding: 1.2rem;
+        font-size: 0.95em;
+    }
+    
+    .audio-table tbody tr {
+        background: white;
+        transition: all 0.3s ease;
+        border-radius: 0.8rem;
+    }
+    
+    .audio-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    }
+    
+    .text-column {
+        max-width: 400px;
+        white-space: normal;
+        font-size: 0.9em;
+        line-height: 1.5;
+        color: #495057;
+    }
+    
+    /* Highlight the UniSonate Column Header if desired */
+    th.our-model {
+        background-color: #e74c3c; /* Distinctive color for your model */
+    }
+    
+    .section-title {
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 700;
+        color: #2c3e50;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      header p {
+        font-size: 0.9rem;
+      }
+
+      .section h2 {
+        font-size: 1.5rem;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UniSonate: A Unified Model for Speech, Music, and Sound Effect Generation with Text Instructions</h1>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Abstract Section -->
+      <section class="section">
+        <h2>Abstract</h2>
+        <p>
+          Generative audio modeling has largely been fragmented into specialized tasks, text-to-speech (TTS), text-to-music (TTM), and text-to-audio (TTA), each operating under heterogeneous control paradigms. Unifying these modalities remains a fundamental challenge due to the intrinsic dissonance between structured semantic representations (speech/music) and unstructured acoustic textures (sound effects). In this paper, we introduce \textbf{UniSonate}, a unified flow-matching framework capable of synthesizing speech, music, and sound effects through a standardized, reference-free natural language instruction interface. To reconcile structural disparities, we propose a novel dynamic token injection mechanism that projects unstructured environmental sounds into a structured temporal latent space, enabling precise duration control within a phoneme-driven Multimodal Diffusion Transformer (MM-DiT). Coupled with a multi-stage curriculum learning strategy, this approach effectively mitigates cross-modal optimization conflicts. Extensive experiments demonstrate that UniSonate achieves state-of-the-art performance in instruction-based TTS (WER 1.47\%) and TTM (SongEval Coherence 3.18), while maintaining competitive fidelity in TTA. Crucially, we observe \textit{positive transfer}, where joint training on diverse audio data significantly enhances structural coherence and prosodic expressiveness compared to single-task baselines.</p>
+      </section>
+
+      <!-- Experiment Section -->
+      <section class="section">
+        <h2>Experiment</h2>
+        <p>This page shows the samples in the paper "<span class="highlight">UniSonate</span>: A Unified Model for Speech, Music, and Sound Effect Generation with Text Instructions".</p>
+
+        <p>All test samples and speakers have not appeared in the training set and validation set.</p>
+
+        <p>During inference, we employ a straightforward yet effective method to estimate total duration. Since speech rate strongly correlates with both age and emotion, we compute the average duration per phoneme for different age-emotion combinations (e.g., youth-happy) from the training set. At inference time, we perform keyword matching on the instruction text and calculate the total duration by multiplying the number of phonemes by the corresponding average duration. When no keywords match, we default to the global average phoneme duration.</p>
+
+        <p>For CosyVoice2, which lacks text-based control for timbre attributes (gender, age), we provide reference audio that matches timbre description during inference and map inputs to its supported short-form control text (e.g., "Please speak very happy").</p>
+
+        <p>Note that DiffRhythm+ does not support music synthesis under 90 seconds; therefore, we generate longer sequences and truncate them to create test samples, which may introduce evaluation bias.</p>
+
+      </section>
+
+      <!-- Model Architecture -->
+
+      <section class="section">
+        <h2>Comparing Model Capabilities</h2>
+        <figure>
+            <img src="radar.png" alt="Comparing Model Capabilities">
+            <figcaption>Holistic capability assessment across Speech (SeedTTS-WER, Control), Music (SongEval), and Sound Effects (FAD, FD). Unlike specialized baselines restricted to specific domains, UniSonate achieves pan-modal coverage. It demonstrates superior instruction-following and structural coherence in structured tasks (TTS/TTM) while effectively extending to unstructured TTA.</figcaption>
+        </figure>
+    </section>
+      
+      <section class="section">
+        <h2>Model Architecture</h2>
+        <figure>
+            <img src="model.png" alt="Model Architecture">
+            <figcaption>
+            The overall architecture of <strong>UniSonate</strong>. The framework employs a dual-stream MM-DiT based on conditional flow matching. The input follows the Instruction-Content Alignment paradigm, unifying natural language instructions with content sequences, utilizing phonemes for speech/music and special token Injection (via learnable [SFX] tokens) for sound effects. These semantic conditions interact with acoustic latents (compressed by a Mel-VAE) through Joint Diffusion Transformer layers to enable unified audio generation.
+            </figcaption>
+        </figure>
+    </section>
+
+<!-- REBUTTAL SUPPLEMENTARY: MALE ENGLISH VOCALS -->
+        <section class="container py-5">
+            <!-- 醒目标题设计：使用黄色背景强调这是新增内容 -->
+            <div class="alert alert-warning text-center mb-4" role="alert">
+                <h3 class="m-0 fw-bold">
+                    <i class="bi bi-music-note-beamed me-2"></i>
+                    [New Supplementary] TTM - Male English Vocals
+                </h3>
+                <p class="mb-0 mt-2 text-dark">
+                    Additional samples demonstrating male vocal performance in English, as requested by reviewers.
+                </p>
+            </div>
+            
+            <div class="audio-table p-4 border border-warning rounded shadow-sm">
+                <table class="w-100">
+                    <thead>
+                        <tr>
+                            <!-- 调整列宽比例，给文本更多空间 -->
+                            <th class="text-start ps-4" style="width: 40%;">Instruct Description</th>
+                            <th class="text-start ps-4" style="width: 30%;">Lyrics</th>
+                            <!-- 只保留 UniSonate 列 -->
+                            <th class="our-model text-center" style="width: 30%;">UniSonate (Ours)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <!-- Sample 1 -->
+                        <tr>
+                          <td class="text-column ps-4">
+                              This classical piece features a male singer in his 30s with a warm, resonant tone. The instrumentation blends piano, strings, and a choir to create a serene and reflective atmosphere. The tempo is moderate with a steady, flowing rhythm in the key of Bb major, evoking a sense of tranquility and introspection, as if transporting the listener to a peaceful, contemplative moment.
+                          </td>
+                          <td class="text-column ps-4">
+                              As I look in your eyes I hold on to your body
+                          </td>
+                          <td class="text-center">
+                              <audio controls="" preload="auto" class="w-100">
+                                  <source src="wav/male_en_music/1.wav" />
+                              </audio>
+                          </td>
+                        </tr>
+
+                        <!-- Sample 4 -->
+                        <tr>
+                          <td class="text-column ps-4">
+                              A classical choral piece performed by a mixed choir ranging from young adults to middle-aged singers. The harmonious voices blend seamlessly with gentle harp and string accompaniment. The tempo is moderate with a flowing melody in F major. The music evokes a sense of tranquility, reverence, and solemn reflection, creating a soothing and spiritually uplifting ambiance.
+                          </td>
+                          <td class="text-column ps-4">
+                              May your days be merry and bright
+                          </td>
+                          <td class="text-center">
+                              <audio controls="" preload="auto" class="w-100">
+                                  <source src="wav/male_en_music/4.wav" />
+                              </audio>
+                          </td>
+                        </tr>
+
+                        <!-- Sample 5 -->
+                        <tr>
+                          <td class="text-column ps-4">
+                              This rock track is led by a male singer in his 20s with a smooth, melodic tone. The instrumentation includes electric guitar, bass guitar, and drums, set to a moderate tempo of around 85 BPM in F major. The gentle strumming of the guitar combined with the vocals creates a dreamy and reflective atmosphere, evoking feelings of nostalgia and introspection.
+                          </td>
+                          <td class="text-column ps-4">
+                              You never know what temporal days may bringLaugh  love  live free  and singWhen life is in discord
+                          </td>
+                          <td class="text-center">
+                              <audio controls="" preload="auto" class="w-100">
+                                  <source src="wav/male_en_music/5.wav" />
+                              </audio>
+                          </td>
+                        </tr>
+
+                        <!-- Sample 6 -->
+                        <tr>
+                          <td class="text-column ps-4">
+                              A pop song featuring a male singer in his 20s with a smooth, melodic voice. The track is built on acoustic and electric guitars along with soft, ambient synths. With a moderate tempo of around 100 BPM in D major, the music feels bright and uplifting yet serene. It creates a warm, inviting atmosphere that evokes nostalgia and comfort, perfect for a moment of quiet introspection.
+                          </td>
+                          <td class="text-column ps-4">
+                              Would take your breath away Id write it all Even more in love with me youd fall
+                          </td>
+                          <td class="text-center">
+                              <audio controls="" preload="auto" class="w-100">
+                                  <source src="wav/male_en_music/6.wav" />
+                              </audio>
+                          </td>
+                        </tr>
+                        <!-- Sample 2 -->
+                        <tr>
+                          <td class="text-column ps-4">
+                              An energetic electronic dance music (EDM) track performed by a male vocalist. His tone is passionate and lively, driven by synthesizers, drum machines, and electronic beats. Set at a tempo of 128 BPM in Ab major, the pulsating beats and catchy melody create an uplifting atmosphere filled with excitement, euphoria, and celebration.
+                          </td>
+                          <td class="text-column ps-4">
+                              No I don’t even know if I’m aliveOh, oh, oh without you now
+                          </td>
+                          <td class="text-center">
+                              <audio controls="" preload="auto" class="w-100">
+                                  <source src="wav/male_en_music/2.wav" />
+                              </audio>
+                          </td>
+                        </tr>
+
+                        <!-- Sample 3 -->
+                        <tr>
+                          <td class="text-column ps-4">
+                              A smooth and soulful pop ballad performed by a male singer in his 30s. The arrangement features piano, synthesizer, and drums, moving at a moderate tempo with a steady beat in Bb major. The soft piano and gentle synth textures create a dreamy, ethereal atmosphere, while the singer's delivery adds a touch of melancholy, evoking deep nostalgia and quiet reflection on a past love.
+                          </td>
+                          <td class="text-column ps-4">
+                              Once I was seven years old my momma told me
+                          </td>
+                          <td class="text-center">
+                              <audio controls="" preload="auto" class="w-100">
+                                  <source src="wav/male_en_music/3.wav" />
+                              </audio>
+                          </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+        <!-- TTS SECTION -->
+        <section class="container py-5">
+            <h2 class="section-title text-center mb-4">TTS (Text-to-Speech) Task</h2>
+            
+            <div class="audio-table p-4">
+                <table class="w-100">
+                    <thead>
+                        <tr>
+                            <th class="text-start ps-4">Instruct Description</th>
+                            <th class="text-start ps-4">Text</th>
+                            <!-- ADDED UniSonate Column -->
+                            <th class="our-model">UniSonate (Ours)</th>
+                            <th>InstructAudio</th>
+                            <th>CosyVoice2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <td class="text-column ps-4">A young adult female speaks with a neutral emotion. Her delivery is clear and she has a Mandarin accent.</td>
+                          <td class="text-column ps-4">李大钊在敌人的法庭上慷慨陈词毫不畏惧。</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/1_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/1_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/1_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">The speaker is an elderly woman who uses a measured, neutral tone of voice with an American accent.</td>
+                          <td class="text-column ps-4">I have come to understand. That you were the best daughter you could be.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/2_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/2_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/2_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">You'll hear a young adult woman speaking Mandarin in a happy and casual manner.</td>
+                          <td class="text-column ps-4">你写板报的速度可真快。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/3_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/3_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/3_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">With a playful style and a happy emotion, a middle-aged American woman is speaking.</td>
+                          <td class="text-column ps-4">There it is. My baby.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/4_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/4_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/4_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">An aggressive and angry tone characterizes this audio from a young adult female speaker with a Mandarin accent.</td>
+                          <td class="text-column ps-4">你这种慷他人之慨的做法，让人嗤之以鼻。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/5_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/5_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/5_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">A middle-aged woman speaks angrily and aggressively, marked by an American accent.</td>
+                          <td class="text-column ps-4">You stole something from me like a petty little thief.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/6_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/6_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/6_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">The audio features a young adult female who sounds sad; she speaks softly with a Mandarin accent.</td>
+                          <td class="text-column ps-4">我的故事过程很美，而结局却满是悲伤。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/7_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/7_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/7_cv2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This recording contains a middle-aged man speaking American English. His emotional state is sad, but his delivery is aggressive.</td>
+                          <td class="text-column ps-4">He didn't die from an asthma attack. He died because she killed him here.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/8_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/8_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/8_cv2.wav" /></audio></td>
+                        </tr>  
+                        <tr>
+                          <td class="text-column ps-4">In this audio, we hear a female child speaking with a curious tone and a playful style, using a Mandarin accent.</td>
+                          <td class="text-column ps-4">大人还玩跷跷板？</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/9_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/9_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/9_cv2.wav" /></audio></td>
+                        </tr>  
+                        <tr>
+                          <td class="text-column ps-4">The speaker is an elderly male who speaks seriously and authoritatively in a Mandarin accent.</td>
+                          <td class="text-column ps-4">我的练习本怎么突然没了？</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/10_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/10_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/10_cv2.wav" /></audio></td>
+                        </tr>  
+                        <tr>
+                          <td class="text-column ps-4">A female child expresses curiosity in a playful manner, and her speech is delivered with a Mandarin accent.</td>
+                          <td class="text-column ps-4">因此官方此次对 E二升级版融入了更多实用型的功能。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/11_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/11_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/11_cv2.wav" /></audio></td>
+                        </tr>  
+                        <tr>
+                          <td class="text-column ps-4">The audio features a single speaker, identified as speaker zero, who is an elderly woman. She speaks in a neutral tone with a measured, deliberate style and has an American accent.</td>
+                          <td class="text-column ps-4">I have come to understand. That you were the best daughter you could be.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/12_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/12_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/12_cv2.wav" /></audio></td>
+                        </tr>  
+                        <tr>
+                          <td class="text-column ps-4">In this audio, a middle-aged male speaker can be heard. His tone is happy and his casual speaking style is delivered with an American accent.</td>
+                          <td class="text-column ps-4">What? That's good. Well good luck with that. This is hilarious.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/13_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/13_synthesis.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTS/13_cv2.wav" /></audio></td>
+                        </tr>  
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TTM SECTION -->
+        <section class="container py-5">
+            <h2 class="section-title text-center mb-4">TTM (Text-to-Music) Task</h2>
+            
+            <div class="audio-table p-4">
+                <table class="w-100">
+                    <thead>
+                        <tr>
+                            <th class="text-start ps-4">Instruct Description</th>
+                            <th class="text-start ps-4">Lyrics</th>
+                            <!-- ADDED UniSonate Column -->
+                            <th class="our-model">UniSonate (Ours)</th>
+                            <th>InstructAudio</th>
+                            <th>DiffRhythm+</th>
+                            <th>ACE-Step</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <td class="text-column ps-4">This audio features a male singer in his 20s performing a pop song. His soft, melodic tone carries a touch of melancholy and introspection. The instrumentation includes piano, synthesizer, and electric guitar, all set to a moderate tempo of 120 BPM in the key of C major. Together, these elements create a dreamy and reflective atmosphere, evoking a sense of nostalgia and longing.</td>
+                          <td class="text-column ps-4">紧紧拥抱唯一的你无可救药的坚定。</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/1_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/1.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/1_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/1_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">A female vocalist in her late teens or early twenties performs this electronic pop piece with a soft and melodic delivery. The track incorporates synthesizers, drum machines, and a female vocal sample, driven by a moderate 85 BPM rhythm in A minor. A repetitive and catchy synth riff anchors the melody, contributing to a dreamy, nostalgic mood that feels both introspective and gently melancholic, with subtle warmth and sweetness.</td>
+                          <td class="text-column ps-4">Like you to see the things I hide.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/2_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/2.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/2_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/2_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">With a smooth and melodic vocal tone, a male singer in his 30s performs this pop song. The arrangement features piano and strings accompanying a moderate 120 BPM tempo in F major. The overall mood is reflective and dreamy, conveying a strong sense of nostalgia and longing through its gentle melody.</td>
+                          <td class="text-column ps-4">他们已几万年好像天经地义不容改变。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/3_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/3.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/3_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/3_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This electronic pop track is sung by a female vocalist in her twenties, whose tone is both smooth and melodic. Built around synthesizers, a drum machine, and a female vocal sample, the music moves at 100 BPM in the key of E♭ major. The result is a dreamy, ethereal soundscape that feels tranquil and introspective—like floating through a serene, otherworldly environment filled with warmth and emotion.</td>
+                          <td class="text-column ps-4">I was your treasure treasure treasureI was your treasure.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/4_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/4.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/4_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/4_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">A vibrant and lively pop track is brought to life by a female singer in her late teens to early twenties, whose bright and energetic tone radiates youthful excitement. The instrumentation, featuring a synthesizer, drum machine, and bass guitar, creates a modern and upbeat sound perfect for dancing. This catchy atmosphere of joy and celebration is propelled by a tempo of 128 BPM in the key of D minor.</td>
+                          <td class="text-column ps-4">Wild child Hey hey hey heyGonna be your one only one only one wild child Hey hey hey hey Wild child.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/5_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/5.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/5_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/5_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This pop piece evokes a deep sense of nostalgia and melancholy, delivered by a male singer in his 20s with a warm, soothing tone. The instrumentation includes guitar, bass, drums, and a keyboard, all supporting a moderate tempo of around 130 BPM in D minor. The gentle strumming of the guitar and the overall arrangement create a reflective and deeply emotional atmosphere.</td>
+                          <td class="text-column ps-4">真心被摧残心痛像洪水泛滥。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/7_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/7.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/7_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/7_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">A female vocalist in her twenties performs with a soft and melodic tone in this warm, nostalgic pop song. The gentle strumming of the guitar, combined with the bass and drum, evokes a sense of longing and reflection, as if the singer is reminiscing about past memories. The overall mood is soothing and intimate, carried by a moderate tempo and the harmonious key of G major.</td>
+                          <td class="text-column ps-4">想来想去 真正怨差 麦当作你真正性格。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/8_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/8.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/8_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/8_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">Energetic and passionate vocals from a female singer in her 20s define this optimistic pop track. The music features guitar, bass, and drums, driving forward at 134 BPM in the key of C major. The overall feeling is one of youthful energy and urgency, much like a warm summer breeze filled with excitement.</td>
+                          <td class="text-column ps-4">My head is blown away away away away away.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/9_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/9.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/9_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/9_ace.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">Smooth, melodic vocals from a female singer in her twenties guide this electronic pop track on a dreamy, ethereal journey. The instrumentation, built on synthesizers, a drum machine, and a female vocal sample, creates a sense of floating through a futuristic soundscape at 100 BPM in E♭ major. The overall atmosphere is one of tranquility and introspection, feeling both weightless and emotionally warm.</td>
+                          <td class="text-column ps-4">I was your treasure treasure treasureI was your treasure.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/10_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/10.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/10_diff.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTM/10_ace.wav" /></audio></td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+        <!-- TTA SECTION -->
+        <section class="container py-5">
+            <h2 class="section-title text-center mb-4">TTA(Text-to-Audio) Task</h2>
+            
+            <div class="audio-table p-4">
+                <table class="w-100">
+                    <thead>
+                        <tr>
+                            <th class="text-start ps-4">Instruct Description</th>
+                            <!-- ADDED UniSonate Column -->
+                            <th class="our-model">UniSonate (Ours)</th>
+                            <th>Stable Audio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                          <td class="text-column ps-4">Underwater bubbles rise as divers breathe and fish swim silently above the sandy seabed.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/1_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/1.wav" /></audio></td>
+                        </tr>
+                      <tr>
+                          <td class="text-column ps-4">Birds chirp while water flows gently, and two people talk quietly in a lush forest setting.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/2_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/2.wav" /></audio></td>
+                        </tr>
+                      <tr>
+                          <td class="text-column ps-4">The audio features a melancholic blend of new-age theme music that evokes a sense of introspection and longing.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/3_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/3.wav" /></audio></td>
+                        </tr>
+                      <tr>
+                          <td class="text-column ps-4">Crickets chirped steadily while faint mechanical noises hummed, accompanied by relaxed conversation in the dim outdoor ambiance.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/4_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/4.wav" /></audio></td>
+                        </tr>
+                      <tr>
+                          <td class="text-column ps-4">Ceramic tray clinks softly as hands assemble it on a workbench; faint background sounds in a quiet indoor space.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/5_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/5.wav" /></audio></td>
+                        </tr>
+                      <tr>
+                          <td class="text-column ps-4">Ducks quacked softly while birds chirped, leaves rustled, and distant human voices blended in a tranquil outdoor setting.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/6_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/6.wav" /></audio></td>
+                      </tr>
+                      <tr>
+                          <td class="text-column ps-4">A dog’s footsteps and faint jingling of its collar accompany the sound of quiet footsteps on a dimly lit street.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/7_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/7.wav" /></audio></td>
+                      </tr>
+                      <tr>
+                          <td class="text-column ps-4">The audio contains an emotional, reverb-heavy track with cinematic strings, simple piano and guitar melodies, and synth pad chords. It's relaxing, calming, and passionate.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/8_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/TTA/8.wav" /></audio></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+        <!-- DIALOGUE SECTION -->
+        <section class="container py-5">
+            <h2 class="section-title text-center mb-4">Dialogue-TTS Task</h2>
+            
+            <div class="audio-table p-4">
+                <table class="w-100">
+                    <thead>
+                        <tr>
+                            <th class="text-start ps-4">Instruct Description</th>
+                            <th class="text-start ps-4">Text</th>
+                            <!-- ADDED UniSonate Column -->
+                            <th class="our-model">UniSonate (Ours)</th>
+                            <th>InstructAudio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                          <td class="text-column ps-4">This audio features two speakers with distinct vocal characteristics. The first speaker is a young adult female who speaks with a neutral emotional tone. Her delivery is conversational in style, and she speaks Mandarin with a discernible accent. Meanwhile, the second speaker is a young adult male whose speech is also emotionally neutral. He speaks in a casual manner using a standard American accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] 你觉得这个类型跟你平时的行为一致吗？[speaker id 1] Well, that fits nicely.</td>
+                          <!-- ADDED UniSonate Audio -->
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/1_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/1.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This audio features two distinct speakers. The first speaker is a young adult female. Her speech conveys a sad emotion and is delivered in a hesitant manner. She speaks with a discernible Mandarin accent. The second speaker is a young adult male who maintains a neutral emotional tone throughout his delivery. His style of speech is notably clear, and he uses a standard American accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] 我曾经试图放下这些，但每次还是不由自主的比较，心里感觉自己永远不够好。[speaker id 1] This is really the paradox of modern society.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/2_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/2.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This audio features two distinct speakers. The first speaker is a young adult female. Her delivery is measured in style, and she speaks with a calm emotional tone. A discernible Mandarin accent is present in her speech. We also hear a young adult male. His emotional tone is neutral throughout, and he articulates his words in a clear style. He speaks with a standard American accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] 毕竟，有些情感是需要时间去沉淀的。[speaker id 1] Yeah, maybe I should.</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/3_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/3.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This audio recording features two distinct speakers. The first speaker is a young adult male. He speaks in a neutral emotional tone and maintains a casual style of delivery. His accent is standard American. We also hear a young adult female. Her speech carries a calm emotional quality and is delivered in a very natural manner. She speaks with a clear Mandarin accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] It's still waiting until the last minute. [speaker id 1] 我也是啊，尤其是任务太多的时候。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/4_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/4.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">This audio features a dialogue between two speakers. The first speaker is a young adult female who speaks with an angry and aggressive tone in a Mandarin accent. In contrast, the second speaker is a young adult male whose delivery is calm and measured, also speaking with a Mandarin accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] 我先坐下了，哪里都有你。[speaker id 1] 我刚才只是起来帮老人让个座。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/5_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/5.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">A young adult woman delivers her lines in an angry, aggressive style, marked by a Mandarin accent. Her speech is countered by a young adult man who maintains a calm and measured tone, also speaking with a Mandarin accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] 根本不顾及我的需求。[speaker id 1] 我知道你不喜欢，但我也没有别的办法。空调一直开，真的很浪费。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/6_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/6.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">The audio clip contains a conversation where a young adult man speaks in a neutral and clear manner with a Mandarin accent. He is followed by a young adult woman who responds with a calm and measured delivery in the same accent.</td>
+                          <td class="text-column ps-4">[speaker id 0] 主动加个好友，至少能让更多人认识你。[speaker id 1] 我宁愿慢慢认识。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/7_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/7.wav" /></audio></td>
+                        </tr>
+                        <tr>
+                          <td class="text-column ps-4">A young adult female speaks in a calm and clear tone, using a Mandarin accent. She is joined by a young adult male who contributes with a neutral and clear speaking style, also in Mandarin.</td>
+                          <td class="text-column ps-4">[speaker id 0] 感觉这样的活动本身就很有意义。[speaker id 1] 对，而且学到了很多动手技巧。</td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/8_unisonate.wav" /></audio></td>
+                          <td><audio controls="" preload="auto"><source src="wav/Dialogue/8.wav" /></audio></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 UniSonate. All rights reserved.</p>
+  </footer>
+</body>
+</html>

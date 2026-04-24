@@ -58,6 +58,39 @@
       font-weight: 300;
     }
 
+    .header-authors {
+      max-width: 1000px;
+      margin: 1.25rem auto 0;
+      font-weight: 300;
+    }
+
+    .header-authors .author-line,
+    .header-authors .affil-line,
+    .header-authors .author-mail {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      margin: 0 0 0.45rem;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .header-authors .affil-line {
+      font-size: 0.82rem;
+    }
+
+    .header-authors .author-mail {
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .header-authors a {
+      color: #9ecbff;
+    }
+
+    .header-authors a:hover {
+      color: #c8e3ff;
+    }
+
     /* Container */
     .container {
       max-width: 1200px;
@@ -248,6 +281,13 @@
         font-size: 0.9rem;
       }
 
+      .header-authors .author-line,
+      .header-authors .affil-line,
+      .header-authors .author-mail {
+        font-size: 0.78rem;
+        line-height: 1.65;
+      }
+
       .section h2 {
         font-size: 1.5rem;
       }
@@ -261,6 +301,20 @@
 <body>
   <header>
     <h1>UniSonate: A Unified Model for Speech, Music, and Sound Effect Generation with Text Instructions</h1>
+    <div class="header-authors">
+      <p class="author-line">
+        <strong>Chunyu Qiang</strong>, <strong>Xiaopeng Wang</strong>, <strong>Kang Yin</strong>, <strong>Yuzhe Liang</strong>, <strong>Yuxin Guo</strong>, <strong>Teng Ma</strong>, <strong>Ziyu Zhang</strong>
+      </p>
+      <p class="author-line">
+        <strong>Tianrui Wang</strong>, <strong>Cheng Gong</strong>, <strong>Yushen Chen</strong>, <strong>Ruibo Fu</strong>, <strong>Chen Zhang</strong>, <strong>Longbiao Wang</strong>, <strong>Jianwu Dang</strong>
+      </p>
+      <p class="affil-line"><sup>1</sup> Tianjin University, Tianjin, China</p>
+      <p class="affil-line"><sup>2</sup> Kling Team, Kuaishou Technology, Beijing, China</p>
+      <p class="affil-line"><sup>3</sup> Institute of Automation, Chinese Academy of Sciences, Beijing, China</p>
+      <p class="author-mail">
+        { <a href="mailto:qiangchunyu@tju.edu.cn">qiangchunyu</a>, <a href="mailto:longbiao_wang@tju.edu.cn">longbiao_wang</a> }@tju.edu.cn
+      </p>
+    </div>
   </header>
 
   <main>
